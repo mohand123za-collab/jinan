@@ -1766,25 +1766,23 @@ html[data-jinan-theme="dark"] #quran .quran-inline-ayah.is-audio-current{backgro
     for (let i = copy.length - 1; i > 0; i -= 1) { const j = Math.floor(Math.random() * (i + 1)); [copy[i], copy[j]] = [copy[j], copy[i]]; }
     return copy;
   }
-  const difficultyLabels = ["", "سهل", "سهل/متوسط", "متوسط", "متوسط/صعب", "صعب جدًا"];
-  function questionTierAt(index, count) { return Math.min(5, Math.floor((index * 5) / Math.max(1, count)) + 1); }
+  const difficultyLabels = ["", "سهل", "متوسط", "صعب", "متقن"];
+  function questionTierAt(index, count) { const n=Math.max(1,count),p=(index+0.5)/n; if(p<=.20)return 1; if(p<=.50)return 2; if(p<=.80)return 3; return 4; }
   function newGameTierAt(index, count) {
     const key = newGameDifficultyKey;
     if(key === "progressive") return questionTierAt(index,count);
     const plans = {
-      easy: [[1,.70],[2,.25],[3,.05]],
-      medium: [[2,.20],[3,.60],[4,.20]],
-      "medium-hard": [[3,.20],[4,.30],[5,.30],[5,.20]],
-      hard: [[3,.10],[4,.25],[5,.65]],
-      expert: [[5,1]]
+      easy: [[1,.70],[2,.30]],
+      medium: [[1,.20],[2,.60],[3,.20]],
+      "medium-hard": [[2,.20],[3,.60],[4,.20]],
+      hard: [[2,.20],[3,.60],[4,.20]],
+      expert: [[2,.10],[3,.30],[4,.60]]
     };
-    const plan = plans[key] || plans.easy;
-    const position = (index + 0.5) / Math.max(1,count);
-    let cursor = 0;
-    for(const [tier,share] of plan){ cursor += share; if(position <= cursor) return tier; }
+    const plan = plans[key] || plans.easy, position=(index+0.5)/Math.max(1,count); let cursor=0;
+    for(const [tier,share] of plan){cursor+=share;if(position<=cursor)return tier;}
     return plan[plan.length-1][0];
   }
-  function questionDifficultyLabel(tier) { return difficultyLabels[Math.max(1, Math.min(5, Number(tier) || 1))]; }
+  function questionDifficultyLabel(tier) { return difficultyLabels[Math.max(1,Math.min(4,Number(tier)||1))]; }
   const gameStopWords = new Set(["و","ف","في","من","ما","لا","إن","أن","على","الى","ثم","هو","هي","هم","هن","به","له","لهم","كان","الذي","التي","الذين","هذا","هذه","ذلك"]);
   function diversifyAyas(items) {
     const remaining = [...items], ordered = []; let lastSurah = null;
@@ -2532,96 +2530,109 @@ html[data-jinan-theme="dark"] #quran .quran-inline-ayah.is-audio-current{backgro
     const scopePool=ayasForScope(),valid=getNewGameQuestionPool();
     return buildQualityQuestionRound(valid,newGameQuestionCount,(aya,tier,used)=>buildNewGameCandidate(aya,tier,scopePool,used),newGameTierAt);
   }
+  // ===== محرك الأسئلة الذكي — يعتمد على دقة الحفظ لا على العشوائية =====
+  function qWordCount(t){return String(t||'').trim().split(/\s+/).filter(Boolean).length;}
+  function qNorm(t){return normalizeQuranSearch(String(t||''));}
+  function qTokens(t){return qNorm(t).split(/\s+/).filter(Boolean);}
+  function qJaccard(a,b){const A=new Set(qTokens(a)),B=new Set(qTokens(b));if(!A.size||!B.size)return 0;let n=0;for(const x of A)if(B.has(x))n++;return n/(A.size+B.size-n);}
+  function qPrefix(a,b,n=5){const A=qTokens(a),B=qTokens(b);let c=0;for(let i=0;i<Math.min(n,A.length,B.length);i++)if(A[i]===B[i])c++;return c/Math.max(1,n);}
+  function qSuffix(a,b,n=5){const A=qTokens(a),B=qTokens(b);let c=0;for(let i=1;i<=Math.min(n,A.length,B.length);i++)if(A[A.length-i]===B[B.length-i])c++;return c/Math.max(1,n);}
+  function qLengthSimilarity(a,b){const x=qWordCount(a),y=qWordCount(b);return Math.min(x,y)/Math.max(1,x,y);}
+  function qVerseDistance(a,b){if(a.surahIndex===b.surahIndex)return Math.max(0,1-Math.min(30,Math.abs(a.index-b.index))/30);return 0;}
+  function qSimilarityScore(a,b){return .42*qJaccard(a.text,b.text)+.20*qPrefix(a.text,b.text)+.15*qSuffix(a.text,b.text)+.13*qLengthSimilarity(a.text,b.text)+.10*qVerseDistance(a,b);}
+  function qDistractorScore(source,candidate,tier){
+    const sim=qSimilarityScore(source,candidate), sameSurah=source.surahIndex===candidate.surahIndex?1:0, close=source.surahIndex===candidate.surahIndex&&Math.abs(source.index-candidate.index)<=8?1:0;
+    const short=1-Math.min(1,Math.abs(qWordCount(source.text)-qWordCount(candidate.text))/Math.max(1,qWordCount(source.text)));
+    const lexical=qJaccard(source.text,candidate.text);
+    return 45*sim+20*sameSurah+15*close+20*short+15*lexical;
+  }
+  function qDifficultyScore(source,wrong,tier,type){
+    const sim=wrong.length?wrong.reduce((n,x)=>n+qSimilarityScore(source,x),0)/wrong.length:0;
+    const same=wrong.length?wrong.filter(x=>x.surahIndex===source.surahIndex).length/wrong.length:0;
+    const close=wrong.length?wrong.filter(x=>x.surahIndex===source.surahIndex&&Math.abs(x.index-source.index)<=8).length/wrong.length:0;
+    const short=wrong.length?wrong.reduce((n,x)=>n+qLengthSimilarity(source.text,x.text),0)/wrong.length:0;
+    let score=25*sim+20*same+15*close+15*short;
+    if(type==='missing')score+=20;
+    if(type==='next'||type==='reverse')score+=15;
+    if(type==='trap'||type==='plane')score+=10;
+    if(tier===4)score+=20*sim;
+    return Math.max(0,Math.min(100,score));
+  }
+  function qQualityScore(item,source,wrong,tier){
+    const texts=[item.answers?.[item.correct],...wrong.map(x=>x.text||x)];
+    const unique=new Set(texts.map(qNorm));
+    if(unique.size!==4)return 0;
+    const lens=texts.map(qWordCount),min=Math.min(...lens),max=Math.max(...lens);
+    const lengthFair=100*(min/Math.max(1,max));
+    const difficulty=qDifficultyScore(source,wrong,tier,newGameType);
+    const exactRef=source&&source.text&&texts.some(t=>qNorm(t)===qNorm(source.text))?25:0;
+    return Math.min(100, .30*lengthFair+.45*difficulty+25+exactRef);
+  }
+  function qCandidatePool(source,pool,used){
+    return pool.filter(x=>{const k=`${x.surahIndex}:${x.index}`;return k!==`${source.surahIndex}:${source.index}`&&!used.has(k)&&x.text;});
+  }
+  function qPickDistractors(source,pool,tier,used,n=3){
+    const ranked=qCandidatePool(source,pool,used).map(x=>({x,score:qDistractorScore(source,x,tier)})).sort((a,b)=>b.score-a.score);
+    const chosen=[];
+    for(const r of ranked){
+      if(chosen.some(c=>qNorm(c.x.text)===qNorm(r.x.text)))continue;
+      // لا نختار مشتتًا مطابقًا تقريبًا؛ نريد تشابهًا حقيقيًا لكن إجابة واحدة صحيحة.
+      if(tier>=3 && r.score<32)continue;
+      if(chosen.length && tier>=3 && qJaccard(chosen[0].x.text,r.x.text)>.92)continue;
+      chosen.push(r); if(chosen.length===n)break;
+    }
+    return chosen.map(r=>r.x);
+  }
+  function qMakeItem(source,tier,pool,used){
+    let correct=source.text,prompt='',wrong=[];
+    if(newGameType==='surah'){
+      prompt=source.text; const surahs=shuffle(quranData.filter(s=>s.index!==source.surahIndex));
+      const names=surahs.map(s=>s.name).filter((v,i,a)=>a.indexOf(v)===i).slice(0,3);
+      if(names.length<3)return null;
+      const answers=shuffle([source.surahName,...names]);return {prompt,answers,correct:answers.indexOf(source.surahName),sourceRef:`${source.surahIndex}:${source.index}`,sourceType:'surah'};
+    }
+    if(newGameType==='next'){
+      const next=pool.find(x=>x.surahIndex===source.surahIndex&&x.index===source.index+1);if(!next)return null;correct=next.text;
+      wrong=qPickDistractors(next,pool,tier,used,3);prompt=source.text;
+    }else if(newGameType==='missing'){
+      const words=String(source.text).trim().split(/\s+/).filter(Boolean);if(words.length<5)return null;
+      const pos=tier<=1?Math.floor(words.length*.45):tier===2?Math.floor(words.length*.50):Math.floor(words.length*.58);
+      const idx=Math.max(1,Math.min(words.length-2,pos)),word=words[idx];const shown=[...words];shown[idx]='_____';prompt=shown.join(' ');correct=word;
+      const wordCandidates=pool.flatMap(a=>String(a.text).split(/\s+/).map(w=>({text:w,surahIndex:a.surahIndex,index:a.index}))).filter(w=>qNorm(w.text)!==qNorm(word)&&qNorm(w.text).length>=2);
+      wrong=shuffle(wordCandidates).filter((x,i,a)=>a.findIndex(y=>qNorm(y.text)===qNorm(x.text))===i).slice(0,3).map(w=>w.text);
+      if(wrong.length<3)return null;
+      const answers=shuffle([word,...wrong]);return {prompt,answers,correct:answers.indexOf(word),sourceRef:`${source.surahIndex}:${source.index}`,sourceType:'missing'};
+    }else if(newGameType==='reverse'){
+      const words=String(source.text).trim().split(/\s+/).filter(Boolean);if(words.length<8)return null;
+      const shownCount=tier===1?5:tier===2?4:tier===3?3:2;const shown=words.slice(-shownCount).join(' ');const cut=words.length-shownCount;correct=words.slice(Math.max(0,cut-4),cut).join(' ');prompt=`… ${shown}`;
+      wrong=qCandidatePool(source,pool,used).filter(x=>qWordCount(x.text)>=shownCount+3).map(x=>({x,text:x.text.split(/\s+/).slice(-shownCount-4,-shownCount).join(' ')})).filter(x=>x.text).sort((a,b)=>qSimilarityScore(source,b.x)-qSimilarityScore(source,a.x)).slice(0,3).map(x=>x.text);if(wrong.length<3)return null;
+    }else{
+      const words=String(source.text).trim().split(/\s+/).filter(Boolean);if(words.length<6)return null;
+      const shownCount=tier===1?Math.max(3,Math.floor(words.length*.55)):tier===2?Math.max(3,Math.floor(words.length*.50)):tier===3?Math.max(2,Math.floor(words.length*.44)):Math.max(2,Math.floor(words.length*.36));
+      const cut=Math.min(words.length-2,shownCount);prompt=`أكمل الآية:\n\n${words.slice(0,cut).join(' ')} …`;correct=words.slice(cut).join(' ');
+      wrong=qPickDistractors(source,pool,tier,used,3).map(x=>{const w=String(x.text).split(/\s+/);return w.slice(Math.max(0,w.length-qWordCount(correct))).join(' ');});
+      if(wrong.length<3)return null;
+    }
+    const vals=[correct,...wrong].filter(Boolean),uniq=[];for(const v of vals){if(!uniq.some(u=>qNorm(u)===qNorm(v)))uniq.push(v);}if(uniq.length!==4)return null;
+    const answers=shuffle(uniq);return {prompt,answers,correct:answers.findIndex(x=>qNorm(x)===qNorm(correct)),sourceRef:`${source.surahIndex}:${source.index}`,sourceType:newGameType};
+  }
   function buildNewGameQuestions(){
-    // مولد أسئلة مستقر مستوحى من أنماط الاختبارات القرآنية الشائعة
-    // (إكمال الآية، الآية التالية، تحديد السورة، الفراغ، المتشابهات)،
-    // لكن الأسئلة نفسها تُبنى من نص القرآن المضمّن في جِنان.
-    const rawPool=getNewGameQuestionPool().filter(a=>a&&a.text&&a.surahName);
-    const all=allNewGameAyas().filter(a=>a&&a.text&&a.surahName);
-    const count=Math.min(Number(newGameQuestionCount)||5,rawPool.length);
-
-    // توزيع الأسئلة على النطاق المختار بدل أخذ أول آيات متتالية من أول سورة.
-    // في اختيار عدة أجزاء/سور: نمر على كل جزء/سورة بالتناوب ثم نكمل العدد المطلوب.
-    const pool=(()=>{
-      const shuffled=shuffle(rawPool);
-      if(newGameScope!=="juz-multi" && newGameScope!=="juz-range" && newGameScope!=="surah-multi") return shuffled;
-      const buckets=[];
-      if(newGameScope==="surah-multi"){
-        const selected=selectedSurahs();
-        for(const si of selected){ const b=shuffle(shuffled.filter(a=>a.surahIndex===si)); if(b.length) buckets.push(b); }
-      }else{
-        const js=newGameScope==="juz-multi" ? selectedJuzs().sort((a,b)=>a-b) : Array.from({length:Math.abs(Number(newGameSelection.juzTo||1)-Number(newGameSelection.juzFrom||1))+1},(_,i)=>Math.min(Number(newGameSelection.juzFrom||1),Number(newGameSelection.juzTo||1))+i);
-        for(const j of js){ const keys=new Set(ayasForJuz(j).map(a=>`${a.surahIndex}:${a.index}`)); const b=shuffle(shuffled.filter(a=>keys.has(`${a.surahIndex}:${a.index}`))); if(b.length) buckets.push(b); }
-      }
-      if(!buckets.length) return shuffled;
-      const out=[]; let round=0;
-      while(out.length<shuffled.length){ let added=false; for(const b of buckets){ if(b.length>round){out.push(b[round]);added=true;} if(out.length>=shuffled.length)break; } if(!added)break; round++; }
-      return out;
-    })();
-    if(!count||all.length<4)return [];
-    const norm=x=>normalizeQuranSearch(String(x||''));
-    const shuffleUnique=(items,n,keyFn)=>{
-      const arr=shuffle(items),out=[],seen=new Set();
-      for(const x of arr){const k=norm(keyFn(x));if(!k||seen.has(k))continue;seen.add(k);out.push(x);if(out.length>=n)break;}
-      return out;
-    };
-    const addOptions=(correct,wrongValues)=>{
-      const vals=[String(correct),...wrongValues.map(String)];
-      const seen=new Set(),u=[];
-      for(const v of vals){const k=norm(v);if(k&&!seen.has(k)){seen.add(k);u.push(v);}}
-      if(u.length<4)return null;
-      const answers=shuffle(u);return {answers,correct:answers.indexOf(String(correct))};
-    };
-    const result=[],used=new Set();
-    const add=(item)=>{if(!item||!item.answers||item.answers.length!==4)return false;const sig=item.answers.map(norm).sort().join('|');if(used.has(sig))return false;used.add(sig);result.push(item);return true;};
+    const pool=ayasForScope().filter(a=>a&&a.text&&a.surahName),count=Math.min(Number(newGameQuestionCount)||5,pool.length);if(count<1)return [];
+    const result=[],used=new Set(),questionSigs=new Set();
     const tierFor=i=>newGameTierAt(i,count);
-    const byRef=new Map(all.map(a=>[`${a.surahIndex}:${a.index}`,a]));
-    const sameSurah=(a)=>all.filter(x=>x.surahIndex===a.surahIndex&&x.index!==a.index);
-    for(let i=0;i<pool.length&&result.length<count;i++){
-      const a=pool[i],tier=tierFor(result.length),sourceRef=`${a.surahIndex}:${a.index}`;
-      let item=null;
-      if(newGameType==='surah'){
-        const wrong=shuffleUnique(quranData.filter(s=>s.index!==a.surahIndex),3,x=>x.name);
-        const o=addOptions(a.surahName,wrong.map(x=>x.name));
-        if(o)item={prompt:a.text,answers:o.answers,correct:o.correct,surahIndex:a.surahIndex,ayahIndex:a.index,surahName:a.surahName,difficultyTier:tier,difficultyLabel:questionDifficultyLabel(tier),sourceRef,sourceType:'surah',source:'نص القرآن المضمّن في جِنان'};
-      }else if(newGameType==='next'){
-        const next=byRef.get(`${a.surahIndex}:${a.index+1}`);
-        if(next){
-          let wrong=shuffleUnique(sameSurah(a).filter(x=>x.index!==next.index),3,x=>x.text);
-          if(wrong.length<3)wrong=shuffleUnique(all.filter(x=>x.surahIndex!==a.surahIndex),3,x=>x.text);
-          const o=addOptions(next.text,wrong.map(x=>x.text));
-          if(o)item={prompt:a.text,answers:o.answers,correct:o.correct,surahIndex:a.surahIndex,ayahIndex:a.index,surahName:a.surahName,difficultyTier:tier,difficultyLabel:questionDifficultyLabel(tier),sourceRef,sourceType:'next',source:'نص القرآن المضمّن في جِنان'};
-        }
-      }else if(newGameType==='missing'){
-        const words=String(a.text).trim().split(/\s+/).filter(Boolean);
-        if(words.length>=5){
-          const pick=Math.max(1,Math.min(words.length-2,Math.floor(words.length*(tier<=2?.45:.55))));
-          const correct=words[pick],shown=words.slice();shown[pick]='_____';
-          const wordPool=all.flatMap(x=>String(x.text).split(/\s+/)).filter(w=>w!==correct&&norm(w).length>=2);
-          const wrong=shuffleUnique(wordPool,3,x=>x);
-          const o=addOptions(correct,wrong);
-          if(o)item={prompt:shown.join(' '),answers:o.answers,correct:o.correct,surahIndex:a.surahIndex,ayahIndex:a.index,surahName:a.surahName,difficultyTier:tier,difficultyLabel:questionDifficultyLabel(tier),sourceRef,sourceType:'missing',source:'نص القرآن المضمّن في جِنان'};
-        }
-      }else if(newGameType==='reverse'){
-        const words=String(a.text).trim().split(/\s+/).filter(Boolean);
-        if(words.length>=6){
-          const n=Math.max(2,Math.min(6,3+tier%2)),cut=Math.max(1,words.length-n),correct=words.slice(0,cut).slice(-n).join(' ');
-          const candidates=all.filter(x=>x.surahIndex===a.surahIndex&&x.index!==a.index).flatMap(x=>{const w=String(x.text).split(/\s+/).filter(Boolean);return w.length>n?[w.slice(Math.max(0,w.length-n-1),w.length-1).join(' ')]:[]});
-          const wrong=shuffleUnique(candidates,3,x=>x),o=addOptions(correct,wrong);
-          if(o)item={prompt:`هذا المقطع من الآية:\n\n${words.slice(cut).join(' ')}`,answers:o.answers,correct:o.correct,surahIndex:a.surahIndex,ayahIndex:a.index,surahName:a.surahName,difficultyTier:tier,difficultyLabel:questionDifficultyLabel(tier),sourceRef,sourceType:'reverse',source:'نص القرآن المضمّن في جِنان'};
-        }
-      }else{
-        // trap / plane / أي نمط غير معروف: سؤال إكمال جزء من الآية.
-        const words=String(a.text).trim().split(/\s+/).filter(Boolean);
-        if(words.length>=6){
-          const cut=Math.max(2,Math.min(words.length-2,Math.floor(words.length*.55))),correct=words.slice(cut).join(' '),shown=words.slice(0,cut).join(' ');
-          const wrongVerses=shuffleUnique(all.filter(x=>x.surahIndex!==a.surahIndex),3,x=>x.text);
-          const wrong=wrongVerses.map(x=>String(x.text).split(/\s+/).slice(-Math.min(6,Math.max(3,words.length-cut))).join(' '));
-          const o=addOptions(correct,wrong);
-          if(o)item={prompt:`أكمل الآية:\n\n${shown} …`,answers:o.answers,correct:o.correct,surahIndex:a.surahIndex,ayahIndex:a.index,surahName:a.surahName,difficultyTier:tier,difficultyLabel:questionDifficultyLabel(tier),sourceRef,sourceType:newGameType,source:'نص القرآن المضمّن في جِنان'};
-        }
+    // نمر على مصادر متنوعة، ثم نختار فقط السؤال الذي يحقق جودة >=75.
+    const candidates=shuffle(pool);
+    for(let pass=0;pass<4&&result.length<count;pass++){
+      for(const source of candidates){
+        if(result.length>=count)break;
+        const ref=`${source.surahIndex}:${source.index}`;if(used.has(ref))continue;
+        const tier=tierFor(result.length,count);const item=qMakeItem(source,tier,pool,used);if(!item)continue;
+        const wrong=item.answers.filter((_,i)=>i!==item.correct).map(text=>({text,surahIndex:source.surahIndex,index:source.index}));
+        const quality=qQualityScore(item,source,wrong,tier);item.difficultyTier=tier;item.difficultyLabel=questionDifficultyLabel(tier);item.qualityScore=Math.round(quality);
+        if(quality<75)continue;
+        const sig=item.prompt+'|'+item.answers.map(qNorm).sort().join('|');if(questionSigs.has(sig))continue;
+        questionSigs.add(sig);used.add(ref);result.push(item);
       }
-      add(item);
     }
     return result;
   }
