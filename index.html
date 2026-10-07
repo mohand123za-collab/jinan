@@ -881,8 +881,34 @@ html[data-jinan-theme="dark"] #quran .quran-inline-ayah.is-audio-current{backgro
 .quran-audio-range-picker .btn{min-height:44px}
 @media(max-width:600px){.quran-audio-range-picker{grid-template-columns:1fr}.quran-audio-range-summary{grid-column:auto}}
 </style>
+
+<style id="jinan-entry-and-levels">
+  body.jinan-entry-pending header,
+  body.jinan-entry-pending footer,
+  body.jinan-entry-pending main > :not(#jinanEntryChoice){display:none!important}
+  body.jinan-entry-pending{min-height:100vh}
+  .jinan-entry-choice{min-height:100vh;display:grid;place-items:center;padding:28px 18px;background:
+    radial-gradient(circle at 50% 25%,rgba(215,182,106,.16),transparent 38%),
+    linear-gradient(145deg,#071b16,#10382f 55%,#071b16);text-align:center}
+  .jinan-entry-card{width:min(680px,100%);padding:42px 28px;border:1px solid rgba(255,232,166,.45);border-radius:28px;background:linear-gradient(160deg,rgba(23,75,59,.94),rgba(7,27,22,.96));box-shadow:0 24px 70px rgba(0,0,0,.28)}
+  .jinan-entry-mark{width:78px;height:78px;margin:0 auto 18px;border:1px solid rgba(255,232,166,.5);border-radius:50%;display:grid;place-items:center;color:#ffe8a6;font:700 38px Amiri,serif}
+  .jinan-entry-card h1{margin:8px 0;color:#ffe8a6;font:700 clamp(42px,8vw,64px) Amiri,serif}
+  .jinan-entry-card>p{max-width:560px;margin:0 auto;color:#eaf2ed;font-size:18px}
+  .jinan-entry-actions{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;margin:28px auto 12px;max-width:560px}
+  .jinan-entry-actions button{min-height:58px;border-radius:16px;padding:10px 18px;font:700 17px "IBM Plex Sans Arabic",sans-serif;cursor:pointer}
+  .jinan-entry-primary{border:1px solid #f0ca69;background:#f0ca69;color:#10251d}
+  .jinan-entry-secondary{border:1px solid #f0ca69;background:transparent;color:#fff0bf}
+  .jinan-entry-actions button:hover{filter:brightness(1.08)}
+  .jinan-entry-note{font-size:13px!important;color:#c9d8d0!important}
+  .jinan-difficulty-choices{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:10px}
+  .jinan-difficulty-btn{min-height:74px!important;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px!important;white-space:normal}
+  .jinan-difficulty-btn small{font-size:12px;opacity:.8;font-weight:600}
+  .jinan-difficulty-btn.active{background:#e7f3ec!important;border-color:#4f8d72!important;outline:2px solid #d7b66a;box-shadow:0 0 0 3px rgba(215,182,106,.16)}
+  @media(max-width:600px){.jinan-entry-card{padding:30px 18px}.jinan-entry-actions{grid-template-columns:1fr}.jinan-entry-card>p{font-size:16px}}
+</style>
+
 </head>
-<body>
+<body class="jinan-entry-pending">
 <header>
   <div class="wrap">
     <a class="brand" href="#home" aria-label="جِنان — الصفحة الرئيسية">جِنان</a>
@@ -899,6 +925,21 @@ html[data-jinan-theme="dark"] #quran .quran-inline-ayah.is-audio-current{backgro
 </header>
 
 <main>
+
+
+<section id="jinanEntryChoice" class="jinan-entry-choice" aria-labelledby="jinanEntryTitle">
+  <div class="jinan-entry-card">
+    <div class="jinan-entry-mark" aria-hidden="true">۞</div>
+    <span class="jinan-home-eyebrow">حديقة قرآنية رقمية</span>
+    <h1 id="jinanEntryTitle">جِنان 🌿</h1>
+    <p>منصة قرآنية تفاعلية تجمع بين المصحف والاستماع والألعاب واختبار الحفظ.</p>
+    <div class="jinan-entry-actions">
+      <button type="button" class="jinan-entry-primary" id="jinanLoginChoice">🔐 تسجيل الدخول / إنشاء حساب</button>
+      <button type="button" class="jinan-entry-secondary" id="jinanGuestChoice">👤 اللعب كضيف</button>
+    </div>
+    <p class="jinan-entry-note">يمكنك تجربة الألعاب والمصحف كضيف، بينما يُحفظ التقدم والنقاط للحساب المسجّل.</p>
+  </div>
+</section>
 
 <section id="home" class="jinan-home-hero" aria-labelledby="homeTitle">
   <div class="jinan-home-glow" aria-hidden="true"></div>
@@ -967,16 +1008,16 @@ html[data-jinan-theme="dark"] #quran .quran-inline-ayah.is-audio-current{backgro
         <h2>حساب اللاعب</h2>
         <p>سجّل الدخول لحفظ تقدمك والمشاركة في لوحة الصدارة.</p>
       </div>
-      <p id="loginRequiredNote" class="login-required-note">يجب تسجيل الدخول أولًا حتى تظهر مراحل القرآن وباقي أقسام الموقع.</p>
+      <p id="loginRequiredNote" class="login-required-note">اختر طريقة الدخول للبدء.</p>
       <div class="account-layout">
         <div class="account-box" id="authBox">
           <h3 id="authTitle">إنشاء حساب أو تسجيل الدخول</h3>
           <form class="account-form" id="authForm">
-            <label>اسم المستخدم
-              <input id="authEmail" type="text" autocomplete="username" required minlength="3" maxlength="24" pattern="[A-Za-z0-9_ء-ي]+" placeholder="مثال: ahmed_01">
+            <label>الاسم
+              <input id="authEmail" type="text" autocomplete="username" required minlength="3" maxlength="80" placeholder="مثال: مهند عبدالله">
             </label>
-            <label>كلمة المرور (٨ أحرف على الأقل)
-              <input id="authPassword" type="password" autocomplete="current-password" required minlength="8" maxlength="128" placeholder="••••••••">
+            <label>كلمة المرور (٥ أرقام على الأقل)
+              <input id="authPassword" type="password" autocomplete="current-password" required minlength="5" maxlength="128" inputmode="numeric" pattern="[0-9٠-٩]{5,}" placeholder="•••••">
             </label>
             <button class="btn primary" type="submit" id="authSubmit">إنشاء حساب</button>
           </form>
@@ -994,7 +1035,7 @@ html[data-jinan-theme="dark"] #quran .quran-inline-ayah.is-audio-current{backgro
             <div class="stat"><strong id="starsValue">0</strong><span>النجوم</span></div>
             <div class="stat"><strong id="zonesValue">0/5</strong><span>المناطق المكتملة</span></div>
           </div>
-          <p class="note">كل مرحلة تضم ٢٠ سؤالًا عشوائيًا من القرآن. تُحسب النقاط حسب الإجابات الصحيحة، وتُمنح نجمة عند إنهاء الجولة. يمكنك اللعب كضيف، بينما يُحفظ التقدم للمستخدم المسجّل.</p>
+          <p class="note">يمكنك تجربة الألعاب والمصحف كضيف دون حساب. النقاط والتقدم والإنجازات تُحفظ في Firebase فقط بعد تسجيل الدخول.</p>
           <div class="account-box" id="adminBox" hidden style="margin-top:18px">
             <h3>لوحة إدارة الحسابات</h3>
             <p class="note">هذه اللوحة تظهر للأدمن فقط، وتعرض حسابات الطلاب المسجّلة من الموقع:</p>
@@ -1045,6 +1086,18 @@ html[data-jinan-theme="dark"] #quran .quran-inline-ayah.is-audio-current{backgro
             </div>
             <div id="newGameScopeControls" class="jinan-scope-controls"></div>
             <div class="jinan-exam-summary" id="newGameScopePreview" aria-live="polite"></div>
+          </div>
+          <div class="jinan-setup-card">
+            <h3>اختر مستوى الاختبار</h3>
+            <div class="jinan-choice-row jinan-difficulty-choices" id="newGameDifficultyChoices" role="group" aria-label="اختيار مستوى الاختبار">
+              <button type="button" class="btn jinan-difficulty-btn active" data-difficulty="easy">🟢 سهل<small>ابدأ بثقة</small></button>
+              <button type="button" class="btn jinan-difficulty-btn" data-difficulty="medium">🟡 متوسط<small>اختبر قوة حفظك</small></button>
+              <button type="button" class="btn jinan-difficulty-btn" data-difficulty="medium-hard">🟠 متوسط + صعب<small>ارفع مستوى التحدي</small></button>
+              <button type="button" class="btn jinan-difficulty-btn" data-difficulty="hard">🔴 صعب<small>للحفاظ والمتقدمين</small></button>
+              <button type="button" class="btn jinan-difficulty-btn" data-difficulty="expert">⚫ متقن<small>لمن أتقن القرآن</small></button>
+              <button type="button" class="btn jinan-difficulty-btn" data-difficulty="progressive">🎯 تحدي متدرج<small>من السهل إلى الإتقان</small></button>
+            </div>
+            <p class="note" id="newGameDifficultySummary">الأسئلة السهلة تكون واضحة، ومع ارتفاع المستوى تزداد قوة التشابه بين الاختيارات.</p>
           </div>
           <div class="jinan-setup-card">
             <h3>اختر عدد الأسئلة</h3>
@@ -1324,14 +1377,32 @@ html[data-jinan-theme="dark"] #quran .quran-inline-ayah.is-audio-current{backgro
   const closeGame = $("closeGame"), nextStage = $("nextStage");
   const leaderboardList = $("leaderboardList");
   function setAuthGate(isSignedIn) {
-    document.body.classList.toggle("auth-locked", !isSignedIn);
-    document.querySelectorAll("[data-app-target]").forEach((button) => { button.hidden = !isSignedIn && button.dataset.appTarget !== "account"; });
-    document.querySelectorAll("[data-app-tab]").forEach((panel) => { panel.classList.toggle("auth-locked-panel", !isSignedIn && panel.dataset.appTab !== "account"); });
-    const note = $("loginRequiredNote"); if (note) note.hidden = isSignedIn;
-    if (!isSignedIn) switchAppTab("account");
+    const canEnter = Boolean(isSignedIn || guestMode);
+    document.body.classList.toggle("auth-locked", !canEnter);
+    document.querySelectorAll("[data-app-target]").forEach((button) => {
+      const target = button.dataset.appTarget;
+      button.hidden = !canEnter && target !== "account";
+      if(guestMode && target === "account") button.hidden = false;
+    });
+    document.querySelectorAll("[data-app-tab]").forEach((panel) => {
+      panel.classList.toggle("auth-locked-panel", !canEnter && panel.dataset.appTab !== "account");
+    });
+    const note = $("loginRequiredNote");
+    if(note) {
+      note.hidden = Boolean(isSignedIn || guestMode);
+      note.textContent = guestMode ? "أنت تلعب كضيف. يمكنك تجربة الألعاب والمصحف دون حساب، وسيتم حفظ التقدم فقط بعد تسجيل الدخول." : "يجب تسجيل الدخول أولًا حتى تظهر مراحل الحساب والميزات المحفوظة.";
+    }
+    if(!canEnter) {
+      document.body.classList.add("jinan-entry-pending");
+      if(entryChoice) entryChoice.hidden=false;
+    } else {
+      document.body.classList.remove("jinan-entry-pending");
+      if(entryChoice) entryChoice.hidden=true;
+      if(!isSignedIn && guestMode) switchAppTab("games");
+    }
   }
   function switchAppTab(target) {
-    if (!currentUser && target !== "account") { document.querySelectorAll("[data-app-tab]").forEach((panel) => panel.classList.toggle("active", panel.dataset.appTab === "account")); document.querySelectorAll("[data-app-target]").forEach((button) => button.classList.toggle("active", button.dataset.appTarget === "account")); setStatus("سجّل الدخول أولًا لفتح باقي الأقسام.", "error"); return; }
+    if (!currentUser && !guestMode && target !== "account") { document.querySelectorAll("[data-app-tab]").forEach((panel) => panel.classList.toggle("active", panel.dataset.appTab === "account")); document.querySelectorAll("[data-app-target]").forEach((button) => button.classList.toggle("active", button.dataset.appTarget === "account")); setStatus("سجّل الدخول أولًا لفتح باقي الأقسام.", "error"); return; }
     document.querySelectorAll("[data-app-tab]").forEach((panel) => panel.classList.toggle("active", panel.dataset.appTab === target));
     document.querySelectorAll("[data-app-target]").forEach((button) => button.classList.toggle("active", button.dataset.appTarget === target));
     const panel = document.querySelector(`[data-app-tab="${target}"]`); if (panel) panel.scrollIntoView({ behavior: "smooth", block: "start" });
@@ -1342,6 +1413,22 @@ html[data-jinan-theme="dark"] #quran .quran-inline-ayah.is-audio-current{backgro
   const hashTabs = { "#adhkar":"adhkar", "#account":"account", "#quran":"quran", "#leaderboard":"leaderboard", "#games":"games", "#daily":"daily", "#achievements":"daily" };
   document.querySelectorAll('a[href^="#"]').forEach((link) => link.addEventListener("click", () => { const target = hashTabs[link.getAttribute("href")]; if (target) switchAppTab(target); }));
   let isSignUp = true, currentUser = null, studentProfile = null, db, auth, busy = false, activeStage = null, answered = false;
+  let guestMode = false;
+  const entryChoice = $("jinanEntryChoice"), loginChoice = $("jinanLoginChoice"), guestChoice = $("jinanGuestChoice");
+  function setEntryMode(mode){
+    guestMode = mode === "guest";
+    try { if(mode) localStorage.setItem("jinan-entry-mode", mode); else localStorage.removeItem("jinan-entry-mode"); } catch(e){}
+    document.body.classList.toggle("jinan-entry-pending", !mode);
+    if(entryChoice) entryChoice.hidden = Boolean(mode);
+    if(mode) switchAppTab(guestMode ? "games" : "account");
+  }
+  loginChoice?.addEventListener("click",()=>setEntryMode("auth"));
+  guestChoice?.addEventListener("click",()=>setEntryMode("guest"));
+  try {
+    const savedEntryMode = localStorage.getItem("jinan-entry-mode");
+    if(savedEntryMode === "guest" || savedEntryMode === "auth") setEntryMode(savedEntryMode);
+  } catch(e) {}
+
   let progress = { points: 0, stars: 0, completedZones: [] };
   const quranData = JSON.parse(document.getElementById("quranData").textContent); window.quranData = quranData;
   const juzStarts = [
@@ -1499,7 +1586,11 @@ html[data-jinan-theme="dark"] #quran .quran-inline-ayah.is-audio-current{backgro
 
   // Reciter registry: add future readers here without changing the player controls.
   const QURAN_AUDIO_RECITERS = [
-    {id:"husary",name:"الشيخ محمود خليل الحصري",baseUrl:"https://everyayah.com/data/Husary_128kbps/"}
+    {id:"husary",name:"الشيخ محمود خليل الحصري",baseUrl:"https://everyayah.com/data/Husary_128kbps/",enabled:true},
+    {id:"abdulbasit",name:"الشيخ عبد الباسط عبد الصمد",baseUrl:"https://everyayah.com/data/Abdul_Basit_Murattal_192kbps/",enabled:true},
+    {id:"minshawy",name:"الشيخ محمد صديق المنشاوي",baseUrl:"https://everyayah.com/data/Minshawy_Murattal_128kbps/",enabled:true},
+    {id:"banna",name:"الشيخ محمود علي البنا",baseUrl:"https://everyayah.com/data/mahmoud_ali_al_banna_32kbps/",enabled:true},
+    {id:"mustafa",name:"الشيخ مصطفى إسماعيل",baseUrl:"https://everyayah.com/data/Mustafa_Ismail_48kbps/",enabled:false,reason:"المصدر المتحقق المتاح حاليًا غير مكتمل، لذلك أُبقي القارئ ظاهرًا لكن غير مفعّل حتى لا أضع روابط غير مؤكدة."}
   ];
   const quranAudioToggle=$("quranAudioToggle"),quranAudioPanel=$("quranAudioPanel"),quranAudioReciterSelect=$("quranAudioReciter"),quranAudioSurahSelect=$("quranAudioSurah"),quranAudioElement=$("quranAudioElement");
   const quranAudioNowPlaying=$("quranAudioNowPlaying"),quranAudioReciterName=$("quranAudioReciterName"),quranAudioStatus=$("quranAudioStatus"),quranAudioStartAyah=$("quranAudioStartAyah"),quranAudioProgress=$("quranAudioProgress"),quranAudioTime=$("quranAudioTime"),quranAudioVolume=$("quranAudioVolume"),quranAudioPlayPause=$("quranAudioPlayPause");
@@ -1592,7 +1683,20 @@ html[data-jinan-theme="dark"] #quran .quran-inline-ayah.is-audio-current{backgro
     quranAudioCurrentKey="";quranText.querySelectorAll(".quran-inline-ayah.is-audio-current").forEach(node=>{node.classList.remove("is-audio-current");node.removeAttribute("aria-current");});
   }
   if(quranAudioSurahSelect){quranAudioSurahSelect.replaceChildren();quranData.forEach(surah=>{const option=document.createElement("option");option.value=String(surah.index);option.textContent=`${arabicIndic(surah.index)}. ${surah.name}`;quranAudioSurahSelect.appendChild(option);});quranAudioSurahSelect.value="1";}
-  if(quranAudioReciterSelect){quranAudioReciterSelect.replaceChildren();QURAN_AUDIO_RECITERS.forEach(reciter=>{const option=document.createElement("option");option.value=reciter.id;option.textContent=reciter.name;quranAudioReciterSelect.appendChild(option);});quranAudioReciterSelect.value=QURAN_AUDIO_RECITERS[0].id;}
+  if(quranAudioReciterSelect){
+    quranAudioReciterSelect.replaceChildren();
+    let preferredReciter="";
+    try{preferredReciter=localStorage.getItem("jinan-preferred-reciter")||"";}catch(e){}
+    QURAN_AUDIO_RECITERS.forEach(reciter=>{
+      const option=document.createElement("option");option.value=reciter.id;
+      option.textContent=reciter.enabled?reciter.name:`${reciter.name} — غير متاح حاليًا`;
+      option.disabled=!reciter.enabled;
+      if(reciter.reason)option.title=reciter.reason;
+      quranAudioReciterSelect.appendChild(option);
+    });
+    const preferred=QURAN_AUDIO_RECITERS.find(item=>item.id===preferredReciter&&item.enabled);
+    quranAudioReciterSelect.value=preferred?.id||QURAN_AUDIO_RECITERS.find(item=>item.enabled)?.id||QURAN_AUDIO_RECITERS[0].id;
+  }
   if(quranAudioJuzSelect){quranAudioJuzSelect.replaceChildren();for(let juz=1;juz<=30;juz++){const option=document.createElement("option");option.value=String(juz);option.textContent=`الجزء ${arabicIndic(juz)}`;quranAudioJuzSelect.appendChild(option);}quranAudioJuzSelect.value="1";}
   quranAudioElement.volume=Number(quranAudioVolume.value||1);quranAudioUpdateControls();quranAudioUpdateRangeUI();
   quranAudioToggle?.addEventListener("click",()=>{const open=quranAudioPanel.hidden;quranAudioPanel.hidden=!open;quranAudioToggle.setAttribute("aria-expanded",String(open));if(open)quranAudioSurahSelect.focus();});
@@ -1615,6 +1719,20 @@ html[data-jinan-theme="dark"] #quran .quran-inline-ayah.is-audio-current{backgro
     if(quranAudioQueue.length&&quranAudioQueueIndex<quranAudioQueue.length-1){const a=quranAudioQueue[++quranAudioQueueIndex];quranAudioPlayAyah(a.surahIndex,a.index,true);return;}
     const surah=quranAudioSurah();if(quranAudioAyahIndex<(surah?.ayas?.length||0))quranAudioPlayAyah(quranAudioSurahIndex,quranAudioAyahIndex+1,true);
   });
+  quranAudioReciterSelect?.addEventListener("change",async()=>{
+    const id=quranAudioReciterSelect.value;
+    const reciter=QURAN_AUDIO_RECITERS.find(item=>item.id===id);
+    if(!reciter?.enabled)return;
+    try{localStorage.setItem("jinan-preferred-reciter",id);}catch(e){}
+    quranAudioReciterName.textContent=reciter.name;
+    quranAudioSetStatus(`تم اختيار ${reciter.name} كقارئ مفضل.`);
+    if(currentUser&&db){
+      try{
+        await setDoc(studentRef(currentUser),{preferredReciter:id,updatedAt:serverTimestamp()},{merge:true});
+        if(studentProfile)studentProfile.preferredReciter=id;
+      }catch(error){console.warn("تعذر حفظ القارئ المفضل في Firebase:",error);}
+    }
+  });
   quranAudioMode?.addEventListener("change",()=>{quranAudioResetQueue();quranAudioUpdateRangeUI();quranAudioUpdateControls();});
   quranAudioJuzSelect?.addEventListener("change",()=>{quranAudioResetQueue();quranAudioUpdateRangeUI();});
   quranAudioStartAyah?.addEventListener("input",()=>{if(quranAudioMode?.value==="ayah-range")quranAudioUpdateRangeUI();});
@@ -1636,7 +1754,7 @@ html[data-jinan-theme="dark"] #quran .quran-inline-ayah.is-audio-current{backgro
     quranAudioSetPlayButton(false);quranAudioUpdateControls();
     quranAudioSetStatus(mode==="juz"?`اكتمل الاستماع إلى الجزء ${arabicIndic(quranAudioJuzSelect?.value||1)}.`:mode==="ayah-range"?`اكتمل نطاق الآيات المحدد من سورة ${surah?.name||""}.`:`اكتملت سورة ${surah?.name||""}.`);
   });
-  quranAudioElement.addEventListener("error",()=>{if(quranAudioAyahIndex){quranAudioSetPlayButton(false);quranAudioSetStatus("تعذر تحميل ملف هذه الآية من EveryAyah. بقي المصحف متاحًا؛ جرّب إعادة التشغيل أو الانتقال للآية التالية.","error");}});
+  quranAudioElement.addEventListener("error",()=>{if(quranAudioAyahIndex){quranAudioSetPlayButton(false);quranAudioSetStatus("تعذر تحميل التلاوة حاليًا، حاول مرة أخرى.","error");}});
   quranAudioElement.addEventListener("pause",()=>quranAudioSetPlayButton(false));
   quranAudioElement.addEventListener("play",()=>quranAudioSetPlayButton(true));
 
@@ -1650,6 +1768,22 @@ html[data-jinan-theme="dark"] #quran .quran-inline-ayah.is-audio-current{backgro
   }
   const difficultyLabels = ["", "سهل", "سهل/متوسط", "متوسط", "متوسط/صعب", "صعب جدًا"];
   function questionTierAt(index, count) { return Math.min(5, Math.floor((index * 5) / Math.max(1, count)) + 1); }
+  function newGameTierAt(index, count) {
+    const key = newGameDifficultyKey;
+    if(key === "progressive") return questionTierAt(index,count);
+    const plans = {
+      easy: [[1,.70],[2,.25],[3,.05]],
+      medium: [[2,.20],[3,.60],[4,.20]],
+      "medium-hard": [[3,.20],[4,.30],[5,.30],[5,.20]],
+      hard: [[3,.10],[4,.25],[5,.65]],
+      expert: [[5,1]]
+    };
+    const plan = plans[key] || plans.easy;
+    const position = (index + 0.5) / Math.max(1,count);
+    let cursor = 0;
+    for(const [tier,share] of plan){ cursor += share; if(position <= cursor) return tier; }
+    return plan[plan.length-1][0];
+  }
   function questionDifficultyLabel(tier) { return difficultyLabels[Math.max(1, Math.min(5, Number(tier) || 1))]; }
   const gameStopWords = new Set(["و","ف","في","من","ما","لا","إن","أن","على","الى","ثم","هو","هي","هم","هن","به","له","لهم","كان","الذي","التي","الذين","هذا","هذه","ذلك"]);
   function diversifyAyas(items) {
@@ -1806,32 +1940,50 @@ html[data-jinan-theme="dark"] #quran .quran-inline-ayah.is-audio-current{backgro
     const maxSpread=[.74,.70,.66,.62,.58][t];if(min<challengeScoreFloors[t]*.72||spread>maxSpread)return null;
     return {difficulty:mean,quality:.62*min+.30*mean+.08*(1-spread),spread,min};
   }
-  function buildQualityQuestionRound(pool,count,buildCandidate){
-    const sources=rankedQuestionSources(pool,count),tiers=[...new Set(Array.from({length:count},(_,i)=>questionTierAt(i,count)))],rankedByTier=new Map();
-    for(const tier of tiers){const rows=[],needed=Array.from({length:count},(_,i)=>questionTierAt(i,count)).filter(x=>x===tier).length,targetRows=Math.max(18,needed*3),sourceCap=Math.min(sources.length,Math.max(60,targetRows*2));let checked=0;for(const source of sources){if(rows.length>=targetRows||checked>=sourceCap)break;checked++;const candidate=buildCandidate(source,tier,new Set());if(!candidate)continue;const metrics=questionSetMetrics(candidate.scoredOptions,tier);if(metrics)rows.push({...candidate,source,tier,metrics});}rows.sort((a,b)=>a.metrics.difficulty-b.metrics.difficulty||b.metrics.quality-a.metrics.quality||a.source.surahIndex-b.source.surahIndex||a.source.index-b.source.index);rankedByTier.set(tier,rows);}
+  function buildQualityQuestionRound(pool,count,buildCandidate,tierResolver=questionTierAt){
+    const sources=rankedQuestionSources(pool,count),tiers=[...new Set(Array.from({length:count},(_,i)=>tierResolver(i,count)))],rankedByTier=new Map();
+    for(const tier of tiers){const rows=[],needed=Array.from({length:count},(_,i)=>tierResolver(i,count)).filter(x=>x===tier).length,targetRows=Math.max(18,needed*3),sourceCap=Math.min(sources.length,Math.max(60,targetRows*2));let checked=0;for(const source of sources){if(rows.length>=targetRows||checked>=sourceCap)break;checked++;const candidate=buildCandidate(source,tier,new Set());if(!candidate)continue;const metrics=questionSetMetrics(candidate.scoredOptions,tier);if(metrics)rows.push({...candidate,source,tier,metrics});}rows.sort((a,b)=>a.metrics.difficulty-b.metrics.difficulty||b.metrics.quality-a.metrics.quality||a.source.surahIndex-b.source.surahIndex||a.source.index-b.source.index);rankedByTier.set(tier,rows);}
     const answerPositions=[...Array(4).keys()],results=[],seenRefs=new Set(),seenAnswerSets=new Set(),usedDistractors=new Set();
     for(let index=0;index<count;index++){
       const tier=questionTierAt(index,count),rows=rankedByTier.get(tier)||[];if(!rows.length)break;
-      const needed=Array.from({length:count},(_,i)=>questionTierAt(i,count)).filter(x=>x===tier).length,width=Math.min(rows.length,Math.max(needed*4,Math.ceil(rows.length*.20))),percentile=[.18,.37,.55,.73,.88][tier-1],start=Math.max(0,Math.min(rows.length-width,Math.round((rows.length-width)*percentile))),band=rows.slice(start,start+width),bestQuality=Math.max(...band.map(x=>x.metrics.quality)),comparable=band.filter(x=>x.metrics.quality>=bestQuality-.075),middle=rows[Math.min(rows.length-1,Math.round(percentile*(rows.length-1)))].metrics.difficulty;
+      const needed=Array.from({length:count},(_,i)=>tierResolver(i,count)).filter(x=>x===tier).length,width=Math.min(rows.length,Math.max(needed*4,Math.ceil(rows.length*.20))),percentile=[.18,.37,.55,.73,.88][tier-1],start=Math.max(0,Math.min(rows.length-width,Math.round((rows.length-width)*percentile))),band=rows.slice(start,start+width),bestQuality=Math.max(...band.map(x=>x.metrics.quality)),comparable=band.filter(x=>x.metrics.quality>=bestQuality-.075),middle=rows[Math.min(rows.length-1,Math.round(percentile*(rows.length-1)))].metrics.difficulty;
       const fallback=[...rows].sort((a,b)=>Math.abs(a.metrics.difficulty-middle)-Math.abs(b.metrics.difficulty-middle)||b.metrics.quality-a.metrics.quality),attemptOrder=[...shuffle(comparable),...fallback];let accepted=null;
-      for(const row of attemptOrder){const ref=`${row.source.surahIndex}:${row.source.index}`;if(seenRefs.has(ref))continue;const candidate=row.distractorKeys?.every(key=>!usedDistractors.has(String(key)))?row:buildCandidate(row.source,tier,usedDistractors);if(!candidate)continue;const metrics=questionSetMetrics(candidate.scoredOptions,tier);if(!metrics||metrics.quality<Math.max(.025,bestQuality-.22))continue;const signature=candidate.item.answers.map(x=>normalizeQuranSearch(x)).sort().join("|");if(seenAnswerSets.has(signature))continue;accepted={...candidate,source:row.source,metrics,ref,signature};break;}
+      for(const row of attemptOrder){const ref=`${row.source.surahIndex}:${row.source.index}`;if(seenRefs.has(ref))continue;const candidate=row.distractorKeys?.every(key=>!usedDistractors.has(String(key)))?row:buildCandidate(row.source,tier,usedDistractors);if(!candidate)continue;const metrics=questionSetMetrics(candidate.scoredOptions,tier);const qualityFloor=[.50,.60,.70,.80,.90][Math.max(0,Math.min(4,tier-1))];if(!metrics||metrics.quality<Math.max(qualityFloor,bestQuality-.22))continue;const signature=candidate.item.answers.map(x=>normalizeQuranSearch(x)).sort().join("|");if(seenAnswerSets.has(signature))continue;accepted={...candidate,source:row.source,metrics,ref,signature};break;}
       if(!accepted)break;
       const item=accepted.item,correctValue=item.answers[item.correct],wrongOrder=shuffle(item.answers.filter((_,i)=>i!==item.correct)),correctPosition=answerPositions[index%answerPositions.length];wrongOrder.splice(correctPosition,0,correctValue);item.answers=wrongOrder;item.correct=correctPosition;
-      item.questionQualityScore=Number(accepted.metrics.quality.toFixed(4));item.questionDifficultyScore=Number(accepted.metrics.difficulty.toFixed(4));item.qualityLevel=tier<=1?"easy":tier<=3?"medium":tier===4?"hard":"expert";
+      item.questionQualityScore=Number(accepted.metrics.quality.toFixed(4));
+      item.questionQualityPercent=Math.round(accepted.metrics.quality*100);
+      item.questionDifficultyScore=Number(accepted.metrics.difficulty.toFixed(4));item.qualityLevel=tier<=1?"easy":tier<=3?"medium":tier===4?"hard":"expert";
       seenRefs.add(accepted.ref);seenAnswerSets.add(accepted.signature);accepted.distractorKeys.forEach(key=>usedDistractors.add(String(key)));results.push(item);
     }
     if(results.length<count){
       const fallbackRows=tiers.flatMap(tier=>(rankedByTier.get(tier)||[]).map(row=>({row,tier}))).sort((a,b)=>b.row.metrics.quality-a.row.metrics.quality||b.row.metrics.difficulty-a.row.metrics.difficulty);
       for(const entry of fallbackRows){if(results.length>=count)break;const {row,tier}=entry,ref=`${row.source.surahIndex}:${row.source.index}`;if(seenRefs.has(ref))continue;
-        const candidate=row.distractorKeys?.every(key=>!usedDistractors.has(String(key)))?row:buildCandidate(row.source,tier,usedDistractors);if(!candidate)continue;const metrics=questionSetMetrics(candidate.scoredOptions,tier);if(!metrics||metrics.quality<Math.max(.015,row.metrics.quality-.25))continue;
+        const candidate=row.distractorKeys?.every(key=>!usedDistractors.has(String(key)))?row:buildCandidate(row.source,tier,usedDistractors);if(!candidate)continue;const metrics=questionSetMetrics(candidate.scoredOptions,tier);const qualityFloor=[.50,.60,.70,.80,.90][Math.max(0,Math.min(4,tier-1))];if(!metrics||metrics.quality<Math.max(qualityFloor,row.metrics.quality-.25))continue;
         const signature=candidate.item.answers.map(x=>normalizeQuranSearch(x)).sort().join("|");if(seenAnswerSets.has(signature))continue;
         const item=candidate.item,correctValue=item.answers[item.correct],wrongOrder=shuffle(item.answers.filter((_,i)=>i!==item.correct)),correctPosition=answerPositions[results.length%answerPositions.length];wrongOrder.splice(correctPosition,0,correctValue);item.answers=wrongOrder;item.correct=correctPosition;
-        item.questionQualityScore=Number(metrics.quality.toFixed(4));item.questionDifficultyScore=Number(metrics.difficulty.toFixed(4));
+        item.questionQualityScore=Number(metrics.quality.toFixed(4));
+        item.questionQualityPercent=Math.round(metrics.quality*100);
+        item.questionDifficultyScore=Number(metrics.difficulty.toFixed(4));
         seenRefs.add(ref);seenAnswerSets.add(signature);candidate.distractorKeys.forEach(key=>usedDistractors.add(String(key)));results.push(item);
       }
     }
     results.sort((a,b)=>a.questionDifficultyScore-b.questionDifficultyScore||a.questionQualityScore-b.questionQualityScore);
-    results.forEach((item,index)=>{const tier=questionTierAt(index,Math.max(count,results.length));item.difficultyTier=tier;item.difficultyLabel=questionDifficultyLabel(tier);item.qualityLevel=tier<=1?"easy":tier<=3?"medium":tier===4?"hard":"expert";});
+    results.forEach((item,index)=>{
+      const tier=tierResolver(index,Math.max(count,results.length));
+      item.difficultyTier=tier;
+      item.difficultyLabel=questionDifficultyLabel(tier);
+      item.qualityLevel=tier<=1?"easy":tier<=3?"medium":tier===4?"hard":"expert";
+      item.id=item.id||`q-${item.surahIndex||0}-${item.ayahIndex||0}-${tier}-${index}`;
+      item.difficulty=tier;
+      item.similarityLevel=Math.max(0,Math.min(4,Math.round((Number(item.questionDifficultyScore)||0)*4)));
+      item.questionType=item.sourceType||"quran-memory";
+      item.surah=item.surahName||"";
+      item.ayah=item.ayahIndex||0;
+      item.juz=challengeJuz({surahIndex:Number(item.surahIndex)||1,index:Number(item.ayahIndex)||1});
+      item.correctAnswer=item.answers?.[item.correct]||"";
+      item.options=Array.isArray(item.answers)?[...item.answers]:[];
+    });
     return results;
   }
   function similarContinuationChoices(sourceAya,correctNext,tier,count,scopePool=allAyas,usedKeys=new Set()){
@@ -1940,8 +2092,17 @@ html[data-jinan-theme="dark"] #quran .quran-inline-ayah.is-audio-current{backgro
     return messages[error?.code] || `حدث خطأ: ${error?.message || "تعذر إكمال العملية"}`;
   }
 
-  function normalizeUsername(value) { return String(value || "").trim().toLowerCase(); }
-  function usernameAuthEmail(username) { return `${normalizeUsername(username)}@accounts.jinan.app`; }
+  function normalizeUsername(value) { return String(value || "").trim(); }
+  function usernameAuthEmail(username) {
+    const value = normalizeUsername(username);
+    if(value.toLowerCase() === "admin") return "admin@accounts.jinan.app";
+    // Keep legacy usernames compatible with existing Firebase accounts.
+    if(/^[A-Za-z0-9_ء-ي]{3,24}$/.test(value)) return `${value.toLowerCase()}@accounts.jinan.app`;
+    // Names containing spaces are stored exactly as entered in Firestore; only the hidden
+    // Firebase email identifier is encoded so Authentication remains compatible.
+    const encoded = encodeURIComponent(value).replace(/%/g, "_p");
+    return `${encoded}@accounts.jinan.app`;
+  }
   let adminClaimVerified = false;
   function isAdminUser(user = currentUser) { return Boolean(user && (studentProfile?.role === "admin" || user.email === usernameAuthEmail("admin") || (currentUser && user.uid === currentUser.uid && adminClaimVerified))); }
   function studentRef(user) { return doc(db, "students", user.uid); }
@@ -2084,7 +2245,18 @@ html[data-jinan-theme="dark"] #quran .quran-inline-ayah.is-audio-current{backgro
     renderProgress(); setStatus("حسابك متصل، وتقدمك محفوظ في Firebase.", "ok"); notifyAdhkarState();
   }
 
-  function showSignedIn(user) { currentUser = user; setAuthGate(true); authBox.hidden = true; playerBox.hidden = false; $("playerEmail").textContent = `اسم المستخدم: ${studentProfile?.username || (isAdminUser(user) ? "admin" : String(user.email || "").split("@")[0])}`; }
+  function showSignedIn(user) {
+    currentUser = user;
+    setAuthGate(true);
+    authBox.hidden = true; playerBox.hidden = false;
+    $("playerEmail").textContent = `اسم المستخدم: ${studentProfile?.username || (isAdminUser(user) ? "admin" : String(user.email || "").split("@")[0])}`;
+    const preferred=QURAN_AUDIO_RECITERS?.find(item=>item.id===studentProfile?.preferredReciter&&item.enabled);
+    if(preferred&&quranAudioReciterSelect){
+      quranAudioReciterSelect.value=preferred.id;
+      try{localStorage.setItem("jinan-preferred-reciter",preferred.id);}catch(e){}
+      quranAudioReciterName.textContent=preferred.name;
+    }
+  }
   function showSignedOut() { adminClaimVerified = false; currentUser = null; adhkarRewardRecords = {}; studentProfile = null; notifyAdhkarState(); if (adminBox) adminBox.hidden = true; if (adminNavButton) adminNavButton.hidden = true; setAuthGate(false); authBox.hidden = false; playerBox.hidden = true; authPassword.value = ""; setStatus("أنشئ حسابًا أو سجّل الدخول للبدء."); renderProgress(); }
 
   function renderQuestion() {
@@ -2150,7 +2322,7 @@ html[data-jinan-theme="dark"] #quran .quran-inline-ayah.is-audio-current{backgro
   const newGameLevelNames = ["مبتدئ","طالب","مجتهد","متقن","متقدم","خبير","فارس جِنان 👑"];
   const newGameCounts = [5,10,15,20,30,50];
   let newGameType = "surah", newGameScope = "juz-single", newGameSelection = {juz:1}, newGameQuestionCount = 5;
-  let newGameQuestions = [], newGameIndex = 0, newGameScore = 0, newGameCorrect = 0, newGameWrong = 0, newGameCombo = 0, newGameBestCombo = 0, newGameAnswered = false, newGameDifficultyKey = "beginner";
+  let newGameQuestions = [], newGameIndex = 0, newGameScore = 0, newGameCorrect = 0, newGameWrong = 0, newGameCombo = 0, newGameBestCombo = 0, newGameAnswered = false, newGameDifficultyKey = "easy";
   let newGameProgress = { points:0, xp:0, exams:0, bestCombo:0, gamesPlayed:{surah:0,next:0,missing:0,plane:0,trap:0,reverse:0}, religiousGamesPlayed:{compass:0,scenario:0,errors:0}, badges:[], discovered:false };
   const newGameDataRef = () => currentUser ? doc(db,"users",currentUser.uid,"gameProgress","main") : null;
   const ng = id => document.getElementById(id);
@@ -2211,18 +2383,21 @@ html[data-jinan-theme="dark"] #quran .quran-inline-ayah.is-audio-current{backgro
     if(scope==="ayah-range") newGameSelection={surah:1,from:1,to:quranData[0].ayas.length};
     updateNewGameSetup();
   }
-  function getNewGameDifficulty(index,count){ return questionDifficultyLabel(questionTierAt(index,count)); }
+  function getNewGameDifficulty(index,count){ return questionDifficultyLabel(newGameTierAt(index,count)); }
   function updateNewGameSetup(){
     populateNewGameControls();
     const available=getNewGameQuestionPool(),max=available.length;
     document.querySelectorAll(".jinan-count-btn").forEach(b=>b.classList.toggle("active",Number(b.dataset.count)===newGameQuestionCount));
     ng("newGameAvailableCount").textContent=max?`المتاح لهذه اللعبة داخل النطاق: ${max} سؤالًا.`:(newGameType==="surah"?"اختر محتوى من النطاق المحدد أولًا.":newGameType==="next"?"لا توجد آيات كافية لهذه اللعبة داخل النطاق المختار.":"اختر محتوى من النطاق المحدد أولًا." );
     ng("newGameScopePreview").innerHTML=`<strong>النطاق المحدد:</strong> ${newGameEscape(currentScopeLabel())}<br><span>عدد الآيات المتاحة: <strong>${max}</strong></span>`;
-    ng("newGameSummary").innerHTML=`<strong>${newGameEscape(currentScopeLabel())}</strong><br>عدد الأسئلة: <strong>${newGameQuestionCount||0}</strong><br>الإجابة الصحيحة: <strong>+10</strong> نقاط &nbsp;|&nbsp; الإجابة الخاطئة: <strong>-5</strong> نقاط<br>اللعبة: <strong>${newGameEscape(newGameNames[newGameType])}</strong>`;
+    document.querySelectorAll(".jinan-difficulty-btn").forEach(b=>b.classList.toggle("active",b.dataset.difficulty===newGameDifficultyKey));
+    const difficultyNames={easy:"سهل — ابدأ بثقة",medium:"متوسط — اختبر قوة حفظك","medium-hard":"متوسط + صعب — ارفع مستوى التحدي",hard:"صعب — للحفاظ والمتقدمين",expert:"متقن — لمن أتقن القرآن",progressive:"تحدي متدرج — من السهل إلى الإتقان"};
+    ng("newGameDifficultySummary").textContent=difficultyNames[newGameDifficultyKey]||difficultyNames.easy;
+    ng("newGameSummary").innerHTML=`<strong>${newGameEscape(currentScopeLabel())}</strong><br>المستوى: <strong>${newGameEscape(difficultyNames[newGameDifficultyKey]||"سهل")}</strong><br>عدد الأسئلة: <strong>${newGameQuestionCount||0}</strong><br>الإجابة الصحيحة: <strong>+10</strong> نقاط &nbsp;|&nbsp; الإجابة الخاطئة: <strong>-5</strong> نقاط<br>اللعبة: <strong>${newGameEscape(newGameNames[newGameType])}</strong>`;
     ng("newGameStart").disabled=!max || !newGameQuestionCount;
   }
   function openNewGame(type){
-    newGameType=type; newGameScope="juz-single"; newGameSelection={juz:1}; newGameQuestionCount=5; planeHearts=3; planeResolved=false;
+    newGameType=type; newGameScope="juz-single"; newGameSelection={juz:1}; newGameQuestionCount=5; newGameDifficultyKey=newGameDifficultyKey||"easy"; planeHearts=3; planeResolved=false;
     ng("newGameTitle").textContent=newGameNames[type]; ng("newGameSubtitle").textContent="اختر نطاق القرآن وعدد الأسئلة قبل البداية.";
     ng("newGameSetup").hidden=false;ng("newGamePlay").hidden=true;ng("newGameResult").hidden=true;ng("newGameBack").hidden=false;
     document.querySelectorAll(".jinan-scope-btn").forEach(b=>b.classList.toggle("active",b.dataset.scope==="juz-single"));
@@ -2355,9 +2530,101 @@ html[data-jinan-theme="dark"] #quran .quran-inline-ayah.is-audio-current{backgro
   }
   function buildSmartNewGameQuestions(){
     const scopePool=ayasForScope(),valid=getNewGameQuestionPool();
-    return buildQualityQuestionRound(valid,newGameQuestionCount,(aya,tier,used)=>buildNewGameCandidate(aya,tier,scopePool,used));
+    return buildQualityQuestionRound(valid,newGameQuestionCount,(aya,tier,used)=>buildNewGameCandidate(aya,tier,scopePool,used),newGameTierAt);
   }
-  function buildNewGameQuestions(){return newGameType==="plane"?buildPlaneQuestions():buildSmartNewGameQuestions();}
+  function buildNewGameQuestions(){
+    // مولد أسئلة مستقر مستوحى من أنماط الاختبارات القرآنية الشائعة
+    // (إكمال الآية، الآية التالية، تحديد السورة، الفراغ، المتشابهات)،
+    // لكن الأسئلة نفسها تُبنى من نص القرآن المضمّن في جِنان.
+    const rawPool=getNewGameQuestionPool().filter(a=>a&&a.text&&a.surahName);
+    const all=allNewGameAyas().filter(a=>a&&a.text&&a.surahName);
+    const count=Math.min(Number(newGameQuestionCount)||5,rawPool.length);
+
+    // توزيع الأسئلة على النطاق المختار بدل أخذ أول آيات متتالية من أول سورة.
+    // في اختيار عدة أجزاء/سور: نمر على كل جزء/سورة بالتناوب ثم نكمل العدد المطلوب.
+    const pool=(()=>{
+      const shuffled=shuffle(rawPool);
+      if(newGameScope!=="juz-multi" && newGameScope!=="juz-range" && newGameScope!=="surah-multi") return shuffled;
+      const buckets=[];
+      if(newGameScope==="surah-multi"){
+        const selected=selectedSurahs();
+        for(const si of selected){ const b=shuffle(shuffled.filter(a=>a.surahIndex===si)); if(b.length) buckets.push(b); }
+      }else{
+        const js=newGameScope==="juz-multi" ? selectedJuzs().sort((a,b)=>a-b) : Array.from({length:Math.abs(Number(newGameSelection.juzTo||1)-Number(newGameSelection.juzFrom||1))+1},(_,i)=>Math.min(Number(newGameSelection.juzFrom||1),Number(newGameSelection.juzTo||1))+i);
+        for(const j of js){ const keys=new Set(ayasForJuz(j).map(a=>`${a.surahIndex}:${a.index}`)); const b=shuffle(shuffled.filter(a=>keys.has(`${a.surahIndex}:${a.index}`))); if(b.length) buckets.push(b); }
+      }
+      if(!buckets.length) return shuffled;
+      const out=[]; let round=0;
+      while(out.length<shuffled.length){ let added=false; for(const b of buckets){ if(b.length>round){out.push(b[round]);added=true;} if(out.length>=shuffled.length)break; } if(!added)break; round++; }
+      return out;
+    })();
+    if(!count||all.length<4)return [];
+    const norm=x=>normalizeQuranSearch(String(x||''));
+    const shuffleUnique=(items,n,keyFn)=>{
+      const arr=shuffle(items),out=[],seen=new Set();
+      for(const x of arr){const k=norm(keyFn(x));if(!k||seen.has(k))continue;seen.add(k);out.push(x);if(out.length>=n)break;}
+      return out;
+    };
+    const addOptions=(correct,wrongValues)=>{
+      const vals=[String(correct),...wrongValues.map(String)];
+      const seen=new Set(),u=[];
+      for(const v of vals){const k=norm(v);if(k&&!seen.has(k)){seen.add(k);u.push(v);}}
+      if(u.length<4)return null;
+      const answers=shuffle(u);return {answers,correct:answers.indexOf(String(correct))};
+    };
+    const result=[],used=new Set();
+    const add=(item)=>{if(!item||!item.answers||item.answers.length!==4)return false;const sig=item.answers.map(norm).sort().join('|');if(used.has(sig))return false;used.add(sig);result.push(item);return true;};
+    const tierFor=i=>newGameTierAt(i,count);
+    const byRef=new Map(all.map(a=>[`${a.surahIndex}:${a.index}`,a]));
+    const sameSurah=(a)=>all.filter(x=>x.surahIndex===a.surahIndex&&x.index!==a.index);
+    for(let i=0;i<pool.length&&result.length<count;i++){
+      const a=pool[i],tier=tierFor(result.length),sourceRef=`${a.surahIndex}:${a.index}`;
+      let item=null;
+      if(newGameType==='surah'){
+        const wrong=shuffleUnique(quranData.filter(s=>s.index!==a.surahIndex),3,x=>x.name);
+        const o=addOptions(a.surahName,wrong.map(x=>x.name));
+        if(o)item={prompt:a.text,answers:o.answers,correct:o.correct,surahIndex:a.surahIndex,ayahIndex:a.index,surahName:a.surahName,difficultyTier:tier,difficultyLabel:questionDifficultyLabel(tier),sourceRef,sourceType:'surah',source:'نص القرآن المضمّن في جِنان'};
+      }else if(newGameType==='next'){
+        const next=byRef.get(`${a.surahIndex}:${a.index+1}`);
+        if(next){
+          let wrong=shuffleUnique(sameSurah(a).filter(x=>x.index!==next.index),3,x=>x.text);
+          if(wrong.length<3)wrong=shuffleUnique(all.filter(x=>x.surahIndex!==a.surahIndex),3,x=>x.text);
+          const o=addOptions(next.text,wrong.map(x=>x.text));
+          if(o)item={prompt:a.text,answers:o.answers,correct:o.correct,surahIndex:a.surahIndex,ayahIndex:a.index,surahName:a.surahName,difficultyTier:tier,difficultyLabel:questionDifficultyLabel(tier),sourceRef,sourceType:'next',source:'نص القرآن المضمّن في جِنان'};
+        }
+      }else if(newGameType==='missing'){
+        const words=String(a.text).trim().split(/\s+/).filter(Boolean);
+        if(words.length>=5){
+          const pick=Math.max(1,Math.min(words.length-2,Math.floor(words.length*(tier<=2?.45:.55))));
+          const correct=words[pick],shown=words.slice();shown[pick]='_____';
+          const wordPool=all.flatMap(x=>String(x.text).split(/\s+/)).filter(w=>w!==correct&&norm(w).length>=2);
+          const wrong=shuffleUnique(wordPool,3,x=>x);
+          const o=addOptions(correct,wrong);
+          if(o)item={prompt:shown.join(' '),answers:o.answers,correct:o.correct,surahIndex:a.surahIndex,ayahIndex:a.index,surahName:a.surahName,difficultyTier:tier,difficultyLabel:questionDifficultyLabel(tier),sourceRef,sourceType:'missing',source:'نص القرآن المضمّن في جِنان'};
+        }
+      }else if(newGameType==='reverse'){
+        const words=String(a.text).trim().split(/\s+/).filter(Boolean);
+        if(words.length>=6){
+          const n=Math.max(2,Math.min(6,3+tier%2)),cut=Math.max(1,words.length-n),correct=words.slice(0,cut).slice(-n).join(' ');
+          const candidates=all.filter(x=>x.surahIndex===a.surahIndex&&x.index!==a.index).flatMap(x=>{const w=String(x.text).split(/\s+/).filter(Boolean);return w.length>n?[w.slice(Math.max(0,w.length-n-1),w.length-1).join(' ')]:[]});
+          const wrong=shuffleUnique(candidates,3,x=>x),o=addOptions(correct,wrong);
+          if(o)item={prompt:`هذا المقطع من الآية:\n\n${words.slice(cut).join(' ')}`,answers:o.answers,correct:o.correct,surahIndex:a.surahIndex,ayahIndex:a.index,surahName:a.surahName,difficultyTier:tier,difficultyLabel:questionDifficultyLabel(tier),sourceRef,sourceType:'reverse',source:'نص القرآن المضمّن في جِنان'};
+        }
+      }else{
+        // trap / plane / أي نمط غير معروف: سؤال إكمال جزء من الآية.
+        const words=String(a.text).trim().split(/\s+/).filter(Boolean);
+        if(words.length>=6){
+          const cut=Math.max(2,Math.min(words.length-2,Math.floor(words.length*.55))),correct=words.slice(cut).join(' '),shown=words.slice(0,cut).join(' ');
+          const wrongVerses=shuffleUnique(all.filter(x=>x.surahIndex!==a.surahIndex),3,x=>x.text);
+          const wrong=wrongVerses.map(x=>String(x.text).split(/\s+/).slice(-Math.min(6,Math.max(3,words.length-cut))).join(' '));
+          const o=addOptions(correct,wrong);
+          if(o)item={prompt:`أكمل الآية:\n\n${shown} …`,answers:o.answers,correct:o.correct,surahIndex:a.surahIndex,ayahIndex:a.index,surahName:a.surahName,difficultyTier:tier,difficultyLabel:questionDifficultyLabel(tier),sourceRef,sourceType:newGameType,source:'نص القرآن المضمّن في جِنان'};
+        }
+      }
+      add(item);
+    }
+    return result;
+  }
 
   function renderNewGameQuestion(){
     const item=newGameQuestions[newGameIndex];if(!item)return;newGameAnswered=false;
@@ -2407,6 +2674,7 @@ html[data-jinan-theme="dark"] #quran .quran-inline-ayah.is-audio-current{backgro
   document.querySelectorAll(".new-game-launch").forEach(b=>b.addEventListener("click",()=>openNewGame(b.dataset.newGame)));
   document.querySelectorAll(".jinan-scope-btn").forEach(b=>b.addEventListener("click",()=>chooseScope(b.dataset.scope)));
   document.querySelectorAll(".jinan-count-btn").forEach(b=>b.addEventListener("click",()=>{newGameQuestionCount=Number(b.dataset.count);updateNewGameSetup()}));
+  document.querySelectorAll(".jinan-difficulty-btn").forEach(b=>b.addEventListener("click",()=>{newGameDifficultyKey=b.dataset.difficulty||"easy";updateNewGameSetup()}));
   bindClick("newGameStart",()=>{const pool=getNewGameQuestionPool();if(pool.length<newGameQuestionCount){const msg=ng("newGameAvailableCount");if(msg)msg.textContent=`هذا النطاق يحتوي على ${pool.length} سؤالًا صالحًا لهذه اللعبة فقط، لذلك لا يمكن بدء امتحان من ${newGameQuestionCount} سؤالًا.`;return}newGameQuestions=buildNewGameQuestions();if(newGameQuestions.length<newGameQuestionCount){const msg=ng("newGameAvailableCount");if(msg)msg.textContent=`وُلد ${newGameQuestions.length} سؤالًا فقط بمشتتات متقاربة وعادلة في هذا النطاق. وسّع النطاق أو اختر عددًا أقل.`;return}newGameIndex=0;newGameScore=0;newGameCorrect=0;newGameWrong=0;newGameCombo=0;newGameBestCombo=0;const setup=ng("newGameSetup"),play=ng("newGamePlay"),result=ng("newGameResult");if(setup)setup.hidden=true;if(play)play.hidden=false;if(result)result.hidden=true;renderNewGameQuestion();});
   bindClick("newGameNext",()=>{if(!newGameAnswered)return;if(newGameIndex<newGameQuestions.length-1){newGameIndex++;renderNewGameQuestion();}else finishNewGame();});
   bindClick("newGameBack",()=>{["newGameSetup","newGamePlay","newGameResult"].forEach(id=>{const el=ng(id);if(el)el.hidden=true});switchAppTab("games")});
@@ -2415,7 +2683,7 @@ html[data-jinan-theme="dark"] #quran .quran-inline-ayah.is-audio-current{backgro
   loadNewGameProgress();
 
   switchAuth.addEventListener("click", () => { isSignUp = !isSignUp; authTitle.textContent = isSignUp ? "إنشاء حساب جديد" : "تسجيل الدخول"; authSubmit.textContent = isSignUp ? "إنشاء حساب" : "دخول"; switchAuth.textContent = isSignUp ? "عندي حساب بالفعل" : "إنشاء حساب جديد"; authPassword.autocomplete = isSignUp ? "new-password" : "current-password"; });
-  authForm.addEventListener("submit", async (event) => { event.preventDefault(); if (busy) return; busy = true; authSubmit.disabled = true; switchAuth.disabled = true; setStatus(isSignUp ? "جاري إنشاء حساب الطالب…" : "جاري تسجيل الدخول…"); try { const username = normalizeUsername(authEmail.value); const password = authPassword.value; if (!/^[a-z0-9_ء-ي]{3,24}$/i.test(username)) throw new Error("اسم المستخدم يجب أن يكون من 3 إلى 24 حرفًا أو رقمًا، دون مسافات."); if (isSignUp && username === "admin") throw new Error("اسم admin محجوز للإدارة."); const internalEmail = usernameAuthEmail(username); if (isSignUp) { const credential = await createUserWithEmailAndPassword(auth, internalEmail, password); await setDoc(studentRef(credential.user), { username, displayName: username, role: "student", createdAt: serverTimestamp(), updatedAt: serverTimestamp() }); } else await signInWithEmailAndPassword(auth, internalEmail, password); } catch (error) { setStatus(error.code === "auth/email-already-in-use" ? "اسم المستخدم مستخدم بالفعل. اختر اسمًا آخر." : (error.message?.startsWith("اسم المستخدم") || error.message?.startsWith("اسم admin") ? error.message : errorMessage(error)), "error"); } finally { busy = false; authSubmit.disabled = false; switchAuth.disabled = false; renderProgress(); } });
+  authForm.addEventListener("submit", async (event) => { event.preventDefault(); if (busy) return; busy = true; authSubmit.disabled = true; switchAuth.disabled = true; setStatus(isSignUp ? "جاري إنشاء الحساب…" : "جاري تسجيل الدخول…"); try { const username = normalizeUsername(authEmail.value); const password = authPassword.value; if (username.length < 3) throw new Error("الاسم يجب أن يتكون من 3 أحرف على الأقل."); if (isSignUp && username.toLowerCase() === "admin") throw new Error("اسم admin محجوز للإدارة."); if (!/^[0-9٠-٩]{5,}$/.test(password)) throw new Error("كلمة المرور يجب أن تتكون من 5 أرقام على الأقل."); const internalEmail = usernameAuthEmail(username); if (isSignUp) { const credential = await createUserWithEmailAndPassword(auth, internalEmail, password); await setDoc(studentRef(credential.user), { username, displayName: username, role: "student", createdAt: serverTimestamp(), updatedAt: serverTimestamp() }); } else await signInWithEmailAndPassword(auth, internalEmail, password); } catch (error) { setStatus(error.code === "auth/email-already-in-use" ? "اسم المستخدم مستخدم بالفعل. اختر اسمًا آخر." : (error.message?.startsWith("الاسم") || error.message?.startsWith("كلمة المرور") || error.message?.startsWith("اسم admin") ? error.message : errorMessage(error)), "error"); } finally { busy = false; authSubmit.disabled = false; switchAuth.disabled = false; renderProgress(); } });
   document.querySelectorAll(".complete-stage, .jump-stage").forEach(button => button.addEventListener("click", () => openStage(Number(button.dataset.stage))));
   // The removed legacy game may no longer have these controls in the DOM.
   // Never let missing legacy elements stop Firebase or the remaining games from initializing.
@@ -2426,10 +2694,13 @@ html[data-jinan-theme="dark"] #quran .quran-inline-ayah.is-audio-current{backgro
     if (stageQuestionIndex < QUESTIONS_PER_STAGE - 1) { stageQuestionIndex += 1; answered = false; renderQuestion(); }
     else finishStage();
   });
-  $("logoutButton").addEventListener("click", async () => { try { await signOut(auth); setStatus("تم تسجيل الخروج.", "ok"); } catch (error) { setStatus(errorMessage(error), "error"); } });
+  $("logoutButton").addEventListener("click", async () => {
+    try { await signOut(auth); guestMode=false; setEntryMode(null); setStatus("تم تسجيل الخروج.", "ok"); }
+    catch (error) { setStatus(errorMessage(error), "error"); }
+  });
 
   setAuthGate(false);
-  try { const app = initializeApp(firebaseConfig); auth = getAuth(app); db = getFirestore(app); loadLeaderboard(); onAuthStateChanged(auth, async (user) => { if (!user) { showSignedOut(); await loadLeaderboard(); return; } try { await ensureStudentProfile(user); showSignedIn(user); await loadProgress(user); await loadNewGameProgress(); await loadAdminAccounts(); await loadLeaderboard(); await loadWeeklyQuestion(); if(isAdminUser(user)) await loadWeeklyHistory(); } catch (error) { if (user.email === usernameAuthEmail("admin")) { studentProfile = { username: "admin", role: "admin" }; showSignedIn(user); try { await loadProgress(user); await loadNewGameProgress(); await loadAdminAccounts(); await loadWeeklyQuestion(); await loadWeeklyHistory(); } catch (fallbackError) { setStatus("تم الدخول كأدمن، لكن يجب نشر قواعد Firestore لعرض الحسابات.", "error"); } } else setStatus(errorMessage(error), "error"); } }); }
+  try { const app = initializeApp(firebaseConfig); auth = getAuth(app); db = getFirestore(app); loadLeaderboard(); onAuthStateChanged(auth, async (user) => { if (!user) { showSignedOut(); await loadLeaderboard(); return; } try { guestMode=false; setEntryMode("auth"); await ensureStudentProfile(user); showSignedIn(user); await loadProgress(user); await loadNewGameProgress(); await loadAdminAccounts(); await loadLeaderboard(); await loadWeeklyQuestion(); if(isAdminUser(user)) await loadWeeklyHistory(); } catch (error) { if (user.email === usernameAuthEmail("admin")) { studentProfile = { username: "admin", role: "admin" }; showSignedIn(user); try { await loadProgress(user); await loadNewGameProgress(); await loadAdminAccounts(); await loadWeeklyQuestion(); await loadWeeklyHistory(); } catch (fallbackError) { setStatus("تم الدخول كأدمن، لكن يجب نشر قواعد Firestore لعرض الحسابات.", "error"); } } else setStatus(errorMessage(error), "error"); } }); }
   catch (error) { setStatus("تعذر تهيئة Firebase. راجع إعدادات المشروع واتصال الإنترنت.", "error"); console.error("JINAN Firebase initialization error:", error); }
 
   /* ===== الألعاب الدينية الثلاث: بيانات مستقلة ومنطق نقاط متوافق (+10 / -5) ===== */
@@ -2772,5 +3043,32 @@ html[data-jinan-theme="dark"] #quran .quran-inline-ayah.is-audio-current{backgro
 })();
 </script>
 <script id="jinan-theme-behavior">(function(){const root=document.documentElement,button=document.getElementById("jinanThemeToggle");if(!button)return;function apply(){const dark=root.dataset.jinanTheme==="dark";button.setAttribute("aria-pressed",String(dark));button.setAttribute("aria-label",dark?"تفعيل الوضع النهاري":"تفعيل الوضع الليلي");const icon=button.querySelector("[aria-hidden]");if(icon)icon.textContent=dark?"☀":"☾";const label=button.querySelector(".jinan-theme-label");if(label)label.textContent=dark?"الوضع النهاري":"الوضع الليلي";}button.addEventListener("click",()=>{const dark=root.dataset.jinanTheme!=="dark";if(dark)root.dataset.jinanTheme="dark";else delete root.dataset.jinanTheme;try{localStorage.setItem("jinan-theme",dark?"dark":"light");}catch(e){}apply();});apply();})();</script>
+<script id="jinan-games-recovery">
+(function(){
+  function showTab(target){
+    document.querySelectorAll('[data-app-tab]').forEach(function(p){p.classList.toggle('active',p.dataset.appTab===target);});
+    var p=document.querySelector('[data-app-tab="'+target+'"]');
+    if(p) p.scrollIntoView({behavior:'smooth',block:'start'});
+  }
+  function openSetup(type){
+    var setup=document.getElementById('newGameSetup'),play=document.getElementById('newGamePlay'),result=document.getElementById('newGameResult');
+    if(!setup) return false;
+    setup.hidden=false; if(play)play.hidden=true; if(result)result.hidden=true;
+    var title=document.getElementById('newGameTitle'),names={surah:'من أي سورة؟ 🕌',next:'الآية التالية ➡️',missing:'الكلمة الناقصة 📖',plane:'✈️ طائرة الآيات',trap:'🪤 الفخ القرآني',reverse:'🔄 اقلب الاتجاه'};
+    if(title&&names[type]) title.textContent=names[type];
+    showTab('jinan-new-games'); return true;
+  }
+  document.addEventListener('click',function(e){
+    var b=e.target.closest && e.target.closest('.new-game-launch');
+    if(!b) return;
+    setTimeout(function(){
+      var panel=document.querySelector('[data-app-tab="jinan-new-games"]');
+      if(panel && !panel.classList.contains('active')) openSetup(b.dataset.newGame||'surah');
+    },80);
+  },true);
+  var gamesBtn=document.querySelector('[data-app-target="games"]');
+  if(gamesBtn) gamesBtn.addEventListener('click',function(){setTimeout(function(){showTab('games');},20);});
+})();
+</script>
 </body>
 </html>
